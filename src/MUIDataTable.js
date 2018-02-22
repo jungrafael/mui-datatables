@@ -98,7 +98,7 @@ class MUIDataTable extends React.Component {
     const defaultOptions = {
       responsive: "stacked",
       filterType: "checkbox",
-      pagination: true, 
+      pagination: true,
       caseSensitive: false,
       rowHover: true,
       rowsPerPage: 10,
@@ -168,6 +168,25 @@ class MUIDataTable extends React.Component {
   }
 
   /*
+   *  Get inner text of a Component, to be used in seach/filtering
+   */
+
+  getElementText(element) {
+    if (React.isValidElement(element))
+      return React.Children.toArray(element.props.children).reduce((acc, c) => {
+        switch (typeof c) {
+          case "object":
+            return acc + this.getElementText(c);
+          case "string":
+            return acc + c;
+          default:
+            return acc;
+        }
+      }, "");
+    else return typeof element !== "string" ? element.toString() : element;
+  }
+
+  /*
    *  Build the table data used to display to the user (ie: after filter/search applied)
    */
 
@@ -176,7 +195,7 @@ class MUIDataTable extends React.Component {
       isSearchFound = false;
 
     for (let index = 0; index < row.length; index++) {
-      const column = typeof row[index] !== "string" ? row[index].toString() : row[index];
+      const column = this.getElementText(row[index]);
 
       if (filterList[index].length && filterList[index].indexOf(column) < 0) {
         isFiltered = true;
@@ -189,7 +208,6 @@ class MUIDataTable extends React.Component {
         isSearchFound = true;
         break;
       }
-
     }
 
     if (isFiltered || (searchText && !isSearchFound)) return false;
