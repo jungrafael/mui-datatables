@@ -328,7 +328,7 @@ class MUIDataTable extends React.Component {
 
   sortTable(data, col, order) {
     let sortedData = data.map((row, index) => ({
-      data: row[col],
+      data: this.getElementText(row[col]),
       position: index,
     }));
 
